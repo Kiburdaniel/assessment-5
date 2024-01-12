@@ -1,25 +1,27 @@
 require('dotenv').config()
 const {CONNECTION_STRING} = process.env
 const Sequelize = require('sequelize')
-
-const sequelize = new Sequelize(CONNECTION_STRING);
-module.exports = {
-    create TABLE countries (
-        country_id serial primary key,
-        name varchar);
-    getCountries: (req, res) => {sequelize.query(SELECT * FROM countries JOIN cities ON country.country_id = cities.country_id)
-    .then(dbRes => res.status(200).send(dbRes[0]))},
-
-    CREATE TABLE cities
-    (city_id serial primary key, name varchar NOT NULL, rating integer,
-    country_id integer references countries (country_id));
-
-    getCities: (req, res) => {sequelize.query(SELECT * FROM countries JOIN cities ON country.country_id = cities.country_id)
-    .then(dbRes => res.status(200).send(dbRes[0]))},
-
-    deleteCity: (req, res) => {sequelize.query(SELECT * FROM countries JOIN cities ON country.country_id = cities.country_id) 
-    .then(dbRes => res.send(dbRes[0]))},
+const sequelize = new Sequelize(CONNECTION_STRING, {
+    dialect: 'postgres', 
+    dialectOptions: {
+        ssl: {
+            rejectUnauthorized: false
+        }
     }
+})
+console.log(CONNECTION_STRING);
+module.exports = {
+    getCountries: (req, res) => {sequelize.query(`SELECT * FROM countries JOIN cities ON country.country_id = cities.country_id`)
+    .then(dbRes => res.status(200).send(dbRes[0]))},
+
+    getCities: (req, res) => {sequelize.query(`SELECT * FROM countries JOIN cities ON country.country_id = cities.country_id`)
+    .then(dbRes => res.status(200).send(dbRes[0]))},
+
+    creatCity: (req, res) => {sequelize.query(`SELECT * FROM countries JOIN cities ON country.country_id = cities.country_id`)
+    .then(dbRes => res.status(200).send(dbRes[0]))},
+    deleteCity: (req, res) => {sequelize.query(`SELECT * FROM countries JOIN cities ON country.country_id = cities.country_id`) 
+    .then(dbRes => res.send(dbRes[0]))},
+    
     seed: (req, res) => {
         sequelize.query(`
             drop table if exists cities;
@@ -32,7 +34,7 @@ module.exports = {
         CREATE TABLE cities
         (city_id serial primary key, name varchar NOT NULL, rating integer,
         country_id integer references countries (country_id));
-
+        
             insert into countries (name)
             values ('Afghanistan'),
             ('Albania'),
@@ -234,3 +236,4 @@ module.exports = {
             res.sendStatus(200)
         }).catch(err => console.log('error seeding DB', err))
     }
+}
