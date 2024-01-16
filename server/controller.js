@@ -11,17 +11,28 @@ const sequelize = new Sequelize(CONNECTION_STRING, {
 })
 console.log(CONNECTION_STRING);
 module.exports = {
-    getCountries: (req, res) => {sequelize.query(`SELECT * FROM countries JOIN cities ON country.country_id = cities.country_id`)
+    getCountries: (req, res) => {sequelize.query(`SELECT * FROM countries`)
     .then(dbRes => res.status(200).send(dbRes[0]))},
 
-    getCities: (req, res) => {sequelize.query(`SELECT * FROM countries JOIN cities ON country.country_id = cities.country_id`)
+    getCities: (req, res) => {
+        const name = req.body.name
+        const rating = req.body.rating
+        const countryId = req.body.countryId
+        sequelize.query(`INSERT INTO cities (${name}, ${rating}, ${countyryId})`)
     .then(dbRes => res.status(200).send(dbRes[0]))},
 
     creatCity: (req, res) => {sequelize.query(`SELECT * FROM countries JOIN cities ON country.country_id = cities.country_id`)
     .then(dbRes => res.status(200).send(dbRes[0]))},
-    deleteCity: (req, res) => {sequelize.query(`SELECT * FROM countries JOIN cities ON country.country_id = cities.country_id`) 
-    .then(dbRes => res.send(dbRes[0]))},
     
+    
+    deleteCity: (req, res) => {
+        
+        const citiesId = req.params.citiesId
+    
+        sequelize.query(`DELETE FROM cities WHERE city_id = ${citiesId}`) 
+    .then(dbRes => res.send(dbRes[0]))},
+    //DELETE
+
     seed: (req, res) => {
         sequelize.query(`
             drop table if exists cities;
